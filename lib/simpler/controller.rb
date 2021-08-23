@@ -41,8 +41,12 @@ module Simpler
     end
 
     def write_response
-      body = render_body
-
+      body = ""
+      if !@request.env['simpler.body'].nil?
+        body = @request.env['simpler.body']
+      else
+        body = render_body
+      end  
       @response.write(body)
     end
     
@@ -55,8 +59,24 @@ module Simpler
       @request.params
     end
 
-    def render(template)
-      @request.env['simpler.template'] = template
+    def render(options)
+      if params.is_a?(Hash)
+        if options.include?(:json)
+          @response['Content-Type'] = 'application/json' 
+          @request.env['simpler.body'] = options[:json]
+        elsif options.include?(:xml)
+          @response['Content-Type'] = 'application/xml' 
+          @request.env['simpler.body'] = options[:xml]
+        elsif options.include?(:plain)
+          @response['Content-Type'] = 'text/html'
+          @request.env['simpler.body'] = options[:plain]
+        else options.include?(:js)
+          @response['Content-Type'] = 'application/js' 
+          @request.env['simpler.body'] = options[:js]
+        end
+      else  
+        @request.env['simpler.template'] = options
+      end
     end
 
   end
