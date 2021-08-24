@@ -34,7 +34,7 @@ module Simpler
         @response.status = 404
         @response.finish
       else
-        controller = route.controller.new(env)
+        controller = route.controller.new(env, route.path_var)
         action = route.action
 
         make_response(controller, action)
