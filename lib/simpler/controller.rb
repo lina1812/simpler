@@ -2,13 +2,13 @@ require_relative 'view'
 
 module Simpler
   class Controller
-
     attr_reader :name, :request, :response
 
-    def initialize(env)
+    def initialize(env, path_var)
       @name = extract_name
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
+      @path_var = path_var
     end
 
     def make_response(action)
@@ -22,6 +22,10 @@ module Simpler
       @response.finish
     end
 
+    def params
+      @request.params.merge(@path_var)
+    end
+
     private
 
     def extract_name
@@ -32,9 +36,21 @@ module Simpler
       @response['Content-Type'] = 'text/html'
     end
 
-    def write_response
-      body = render_body
+    def status(value)
+      @response.status = value
+    end
 
+    def headers
+      @response
+    end
+
+    def write_response
+      body = ''
+      body = if !@request.env['simpler.body'].nil?
+               @request.env['simpler.body']
+             else
+               render_body
+             end
       @response.write(body)
     end
 
@@ -42,13 +58,35 @@ module Simpler
       View.new(@request.env).render(binding)
     end
 
-    def params
-      @request.params
+    def render(options)
+      puts options
+      if options.is_a?(Hash)
+        send("render_" + options.keys.first.to_s, options.values.first.to_s)
+      else
+        @request.env['simpler.template'] = options
+      end
     end
-
-    def render(template)
-      @request.env['simpler.template'] = template
+    
+    def render_json(text)
+      @response['Content-Type'] = 'application/json'
+      @request.env['simpler.body'] = text
     end
-
+    
+    def render_xml(text)
+      @response['Content-Type'] = 'application/xml'
+      @request.env['simpler.body'] = text
+    end
+    
+    def render_plain(text)
+      @response['Content-Type'] = 'text/html'
+      @request.env['simpler.body'] = text
+    end
+    
+    
+    def render_js(text)
+      @response['Content-Type'] = 'application/js'
+      @request.env['simpler.body'] = text
+    end
+    
   end
 end

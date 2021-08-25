@@ -1,0 +1,24 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    nio4r (2.5.8)
+    puma (4.3.8)
+      nio4r (~> 2.0)
+    sequel (5.47.0)
+    singleton (0.1.1)
+    yaml (0.1.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  puma (~> 4.1)
+  sequel
+  singleton
+  yaml
+
+RUBY VERSION
+   ruby 2.7.0p0
+
+BUNDLED WITH
+   2.1.4
