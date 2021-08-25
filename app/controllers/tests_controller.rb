@@ -9,4 +9,8 @@ class TestsController < Simpler::Controller
   def create
     status 302
   end
+  
+  def show
+    status 200
+  end
 end

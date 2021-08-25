@@ -59,23 +59,34 @@ module Simpler
     end
 
     def render(options)
-      if params.is_a?(Hash)
-        if options.include?(:json)
-          @response['Content-Type'] = 'application/json'
-          @request.env['simpler.body'] = options[:json]
-        elsif options.include?(:xml)
-          @response['Content-Type'] = 'application/xml'
-          @request.env['simpler.body'] = options[:xml]
-        elsif options.include?(:plain)
-          @response['Content-Type'] = 'text/html'
-          @request.env['simpler.body'] = options[:plain]
-        else options.include?(:js)
-             @response['Content-Type'] = 'application/js'
-             @request.env['simpler.body'] = options[:js]
-        end
+      puts options
+      if options.is_a?(Hash)
+        send("render_" + options.keys.first.to_s, options.values.first.to_s)
       else
         @request.env['simpler.template'] = options
       end
     end
+    
+    def render_json(text)
+      @response['Content-Type'] = 'application/json'
+      @request.env['simpler.body'] = text
+    end
+    
+    def render_xml(text)
+      @response['Content-Type'] = 'application/xml'
+      @request.env['simpler.body'] = text
+    end
+    
+    def render_plain(text)
+      @response['Content-Type'] = 'text/html'
+      @request.env['simpler.body'] = text
+    end
+    
+    
+    def render_js(text)
+      @response['Content-Type'] = 'application/js'
+      @request.env['simpler.body'] = text
+    end
+    
   end
 end
